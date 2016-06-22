@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="build/react.js"></script>
+  <script src="build/react-dom.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+</head>
+<body>
+
+  <div id="prova"></div>
+
+  <script type="text/babel">
+
+    var Stefano = React.createClass({
+
+      propTypes: {
+        nome: React.PropTypes.string.isRequired,
+        isPerson: React.PropTypes.bool
+      },
+
+      getDefaultProps: function() {
+        return {
+          nome: "Stefano"
+        };
+      },
+
+      getInitialState: function () {
+        return {
+          value: 0
+        };
+      },
+
+      componentDidMount: function() {
+
+      },
+
+      _addByOne: function() {
+        this.setState({
+          value: this.state.value + 1
+        });
+      },
+
+      render: function() {
+        var greeting = "World";
+
+        if (this.props.isPerson){
+          greeting = ("Ciao");
+        }
+
+        return (
+          <div>
+            <h1> Ciao {greeting}</h1>
+            {this.state.value}
+            <button onClick={this._addByOne}> Click Me </button>
+          </div>
+        );
+      }
+
+    });
+
+
+    ReactDOM.render(
+      <Stefano nome="Tim" isPerson={true} /> ,
+      document.getElementById("prova")
+    );
+
+  </script>
+
+</body>
+</html>
