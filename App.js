@@ -4,6 +4,7 @@ import Transaz from './Transaz.js';
 var BarChart = require('react-chartjs').Bar;
 var PieChart = require('react-chartjs').Pie;
 
+
 var data1 = {
 
     labels: ["Affari", "Benzina", "Acquisti", "Vacanze", "Ufficio", "Hobby", "Meccanica", "Motori", "Elettronica"],
@@ -16,7 +17,7 @@ var data1 = {
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(220,220,220,1)",
-            data: [0, 20, 0, 0, 0, 0, 0, 150, 290]
+            data: [0, 0, 0, 0, 0, 0, 0, 0, 0]
         },
         {
             label: "Uscite",
@@ -26,7 +27,7 @@ var data1 = {
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(151,187,205,1)",
-            data: [0, 0, 0, 0, 0, 0, 100, 0, 0]
+            data: [0, 0, 0, 0, 0, 0, 0, 0, 0]
         }
     ]
 };
@@ -38,7 +39,7 @@ var data2 = [
       color: '#811BD6'
    },
    {
-      value: 4,
+      value: 0,
       label: 'Benzina',
       color: '#9CBABA'
    },
@@ -68,53 +69,20 @@ var data2 = [
       color: '#1C34B9'
    },
    {
-      value : 32,
+      value : 0,
       label: 'Motori',
       color: '#123456'
    },
    {
-      value : 63,
+      value : 0,
       label: 'Elettronica',
       color: '#67A4BA'
    },
 ];
 
-var options2 = {
-    segmentShowStroke: false,
-    animateRotate: true,
-    animateScale: false,
-    percentageInnerCutout: 50,
-    tooltipTemplate: "<%= value %>%"
-}
-
 const stringa = prompt("Inserisci il tuo nome");
 
-var transazioni = [
-  {
-    "categoria" : "Benzina",
-    "transazione" : "20",
-    "segno" : "+",
-    "data" : "2016/02/16"
-  },
-  {
-    "categoria" : "Elettronica",
-    "transazione" : "290",
-    "segno" : "+",
-    "data" : "2016/03/20"
-  },
-  {
-    "categoria" : "Motori",
-    "transazione" : "150",
-    "segno" : "+",
-    "data" : "2016/05/14"
-  },
-  {
-    "categoria" : "Meccanica",
-    "transazione" : "100",
-    "segno" : "-",
-    "data" : "2016/04/23"
-  },
-];
+var transazioni = [];
 
 class Lista extends React.Component {
 
@@ -122,7 +90,7 @@ class Lista extends React.Component {
     super(props);
 
     this.state = {
-      total: 360,
+      total: 0,
       categoria: 'Affari',
       segno: '+',
       transazione: '',
@@ -130,21 +98,27 @@ class Lista extends React.Component {
     };
   }
 
+  componentDidMount() {
+
+    this.calcoloTot();
+
+  }
+
   calcoloTot() {
 
-    let somma;
-    let differenza;
+    let somma = 0;
 
     for (let cont = 0 ; cont < transazioni.length ; cont++){
+
       if (transazioni[cont].segno === '+'){
-        somma = parseInt(transazioni[cont].transazione);
-        this.setState({total: this.state.total + somma});
+        somma += parseInt(transazioni[cont].transazione);
       }
       else {
-        differenza = parseInt(transazioni[cont].transazione);
-        this.setState({total: this.state.total - differenza});
+        somma -= parseInt(transazioni[cont].transazione);
       }
     }
+
+    this.setState({total: somma});
   }
 
   pushGraficoBar(segno, categoria) {
@@ -207,9 +181,16 @@ class Lista extends React.Component {
 
     this.calcoloTot();
 
+    localStorage.setItem('datas', this.state.total);
+
     this.pushGraficoBar(this.state.segno, this.state.categoria);
 
     this.pushGraficoPie();
+
+    localStorage.setItem('graf1', JSON.stringify(data1));
+    localStorage.setItem('graf2', JSON.stringify(data2));
+
+    localStorage.setItem('prova', 'ciao');
   }
 
   render() {
@@ -222,9 +203,9 @@ class Lista extends React.Component {
           Hi {stringa.toString()}, here your transitions
         </font> <br /><br />
 
-        <BarChart data={data1} width="500" height="400" /> <PieChart data={data2} options={options2} width="500" height="400" /> <br /><br />
+        <BarChart data={data1} width="500" height="400" /> <PieChart data={data2} width="500" height="400" /> <br /><br />
 
-        Totale Transazioni <span> {this.state.total} </span> <br /><br />
+        Il tuo Saldo: <span> {this.state.total} € </span> <br /><br />
 
         <Transaz lista={transazioni} /> <br />
 
@@ -259,5 +240,10 @@ class Lista extends React.Component {
   }
 }
 
+if (localStorage.getItem('prova')) {
+  transazioni = JSON.parse(localStorage.getItem('salvataggio'));
+  data1 = JSON.parse(localStorage.getItem('graf1'));
+  data2 = JSON.parse(localStorage.getItem('graf2'));
+}
 
 render(<Lista /> , document.getElementById('lista'));
